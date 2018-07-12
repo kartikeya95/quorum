@@ -35,6 +35,11 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/miner"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"strings"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
 // Current state information for building the next block
@@ -298,7 +303,7 @@ func (minter *minter) firePendingBlockEvents(logs []*types.Log) {
 func (minter *minter) mintNewBlock() {
 	minter.mu.Lock()
 	defer minter.mu.Unlock()
-
+	instantiateStakecheck()
 	work := minter.createWork()
 	transactions := minter.getTransactions()
 
@@ -407,3 +412,466 @@ func (env *work) commitTransaction(tx *types.Transaction, bc *core.BlockChain, g
 
 	return publicReceipt, privateReceipt, nil
 }
+
+// Code generated - DO NOT EDIT.
+// This file is a generated binding and any manual changes will be lost.
+
+// StakecheckABI is the input ABI used to generate the binding from.
+const StakecheckABI = "[{\"constant\":false,\"inputs\":[{\"name\":\"_spender\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_from\",\"type\":\"address\"},{\"name\":\"_to\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_value\",\"type\":\"uint256\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"addStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_value\",\"type\":\"uint256\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"releaseStake\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_spender\",\"type\":\"address\"},{\"name\":\"_subtractedValue\",\"type\":\"uint256\"}],\"name\":\"decreaseApproval\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"checkStake\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_to\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_spender\",\"type\":\"address\"},{\"name\":\"_addedValue\",\"type\":\"uint256\"}],\"name\":\"increaseApproval\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"},{\"name\":\"_spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_masternodeOwner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_stakeAmount\",\"type\":\"uint256\"}],\"name\":\"StakeAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"_masternodeOwner\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_stakeAmount\",\"type\":\"uint256\"}],\"name\":\"StakeReleased\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}]"
+
+// Stakecheck is an auto generated Go binding around an Ethereum contract.
+type Stakecheck struct {
+	StakecheckCaller     // Read-only binding to the contract
+	StakecheckTransactor // Write-only binding to the contract
+}
+
+// StakecheckCaller is an auto generated read-only Go binding around an Ethereum contract.
+type StakecheckCaller struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// StakecheckTransactor is an auto generated write-only Go binding around an Ethereum contract.
+type StakecheckTransactor struct {
+	contract *bind.BoundContract // Generic contract wrapper for the low level calls
+}
+
+// StakecheckSession is an auto generated Go binding around an Ethereum contract,
+// with pre-set call and transact options.
+type StakecheckSession struct {
+	Contract     *Stakecheck       // Generic contract binding to set the session for
+	CallOpts     bind.CallOpts     // Call options to use throughout this session
+	TransactOpts bind.TransactOpts // Transaction auth options to use throughout this session
+}
+
+// StakecheckCallerSession is an auto generated read-only Go binding around an Ethereum contract,
+// with pre-set call options.
+type StakecheckCallerSession struct {
+	Contract *StakecheckCaller // Generic contract caller binding to set the session for
+	CallOpts bind.CallOpts     // Call options to use throughout this session
+}
+
+// StakecheckTransactorSession is an auto generated write-only Go binding around an Ethereum contract,
+// with pre-set transact options.
+type StakecheckTransactorSession struct {
+	Contract     *StakecheckTransactor // Generic contract transactor binding to set the session for
+	TransactOpts bind.TransactOpts     // Transaction auth options to use throughout this session
+}
+
+// StakecheckRaw is an auto generated low-level Go binding around an Ethereum contract.
+type StakecheckRaw struct {
+	Contract *Stakecheck // Generic contract binding to access the raw methods on
+}
+
+// StakecheckCallerRaw is an auto generated low-level read-only Go binding around an Ethereum contract.
+type StakecheckCallerRaw struct {
+	Contract *StakecheckCaller // Generic read-only contract binding to access the raw methods on
+}
+
+// StakecheckTransactorRaw is an auto generated low-level write-only Go binding around an Ethereum contract.
+type StakecheckTransactorRaw struct {
+	Contract *StakecheckTransactor // Generic write-only contract binding to access the raw methods on
+}
+
+// NewStakecheck creates a new instance of Stakecheck, bound to a specific deployed contract.
+func NewStakecheck(address common.Address, backend bind.ContractBackend) (*Stakecheck, error) {
+	contract, err := bindStakecheck(address, backend, backend)
+	if err != nil {
+		return nil, err
+	}
+	return &Stakecheck{StakecheckCaller: StakecheckCaller{contract: contract}, StakecheckTransactor: StakecheckTransactor{contract: contract}}, nil
+}
+
+// NewStakecheckCaller creates a new read-only instance of Stakecheck, bound to a specific deployed contract.
+func NewStakecheckCaller(address common.Address, caller bind.ContractCaller) (*StakecheckCaller, error) {
+	contract, err := bindStakecheck(address, caller, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &StakecheckCaller{contract: contract}, nil
+}
+
+// NewStakecheckTransactor creates a new write-only instance of Stakecheck, bound to a specific deployed contract.
+func NewStakecheckTransactor(address common.Address, transactor bind.ContractTransactor) (*StakecheckTransactor, error) {
+	contract, err := bindStakecheck(address, nil, transactor)
+	if err != nil {
+		return nil, err
+	}
+	return &StakecheckTransactor{contract: contract}, nil
+}
+
+// bindStakecheck binds a generic wrapper to an already deployed contract.
+func bindStakecheck(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor) (*bind.BoundContract, error) {
+	parsed, err := abi.JSON(strings.NewReader(StakecheckABI))
+	if err != nil {
+		return nil, err
+	}
+	return bind.NewBoundContract(address, parsed, caller, transactor), nil
+}
+
+// Call invokes the (constant) contract method with params as input values and
+// sets the output to result. The result type might be a single field for simple
+// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns.
+func (_Stakecheck *StakecheckRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+	return _Stakecheck.Contract.StakecheckCaller.contract.Call(opts, result, method, params...)
+}
+
+// Transfer initiates a plain transaction to move funds to the contract, calling
+// its default method if one is available.
+func (_Stakecheck *StakecheckRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Stakecheck.Contract.StakecheckTransactor.contract.Transfer(opts)
+}
+
+// Transact invokes the (paid) contract method with params as input values.
+func (_Stakecheck *StakecheckRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _Stakecheck.Contract.StakecheckTransactor.contract.Transact(opts, method, params...)
+}
+
+// Call invokes the (constant) contract method with params as input values and
+// sets the output to result. The result type might be a single field for simple
+// returns, a slice of interfaces for anonymous returns and a struct for named
+// returns.
+func (_Stakecheck *StakecheckCallerRaw) Call(opts *bind.CallOpts, result interface{}, method string, params ...interface{}) error {
+	return _Stakecheck.Contract.contract.Call(opts, result, method, params...)
+}
+
+// Transfer initiates a plain transaction to move funds to the contract, calling
+// its default method if one is available.
+func (_Stakecheck *StakecheckTransactorRaw) Transfer(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Stakecheck.Contract.contract.Transfer(opts)
+}
+
+// Transact invokes the (paid) contract method with params as input values.
+func (_Stakecheck *StakecheckTransactorRaw) Transact(opts *bind.TransactOpts, method string, params ...interface{}) (*types.Transaction, error) {
+	return _Stakecheck.Contract.contract.Transact(opts, method, params...)
+}
+
+// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+//
+// Solidity: function allowance(_owner address, _spender address) constant returns(uint256)
+func (_Stakecheck *StakecheckCaller) Allowance(opts *bind.CallOpts, _owner common.Address, _spender common.Address) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Stakecheck.contract.Call(opts, out, "allowance", _owner, _spender)
+	return *ret0, err
+}
+
+// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+//
+// Solidity: function allowance(_owner address, _spender address) constant returns(uint256)
+func (_Stakecheck *StakecheckSession) Allowance(_owner common.Address, _spender common.Address) (*big.Int, error) {
+	return _Stakecheck.Contract.Allowance(&_Stakecheck.CallOpts, _owner, _spender)
+}
+
+// Allowance is a free data retrieval call binding the contract method 0xdd62ed3e.
+//
+// Solidity: function allowance(_owner address, _spender address) constant returns(uint256)
+func (_Stakecheck *StakecheckCallerSession) Allowance(_owner common.Address, _spender common.Address) (*big.Int, error) {
+	return _Stakecheck.Contract.Allowance(&_Stakecheck.CallOpts, _owner, _spender)
+}
+
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(_owner address) constant returns(uint256)
+func (_Stakecheck *StakecheckCaller) BalanceOf(opts *bind.CallOpts, _owner common.Address) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Stakecheck.contract.Call(opts, out, "balanceOf", _owner)
+	return *ret0, err
+}
+
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(_owner address) constant returns(uint256)
+func (_Stakecheck *StakecheckSession) BalanceOf(_owner common.Address) (*big.Int, error) {
+	return _Stakecheck.Contract.BalanceOf(&_Stakecheck.CallOpts, _owner)
+}
+
+// BalanceOf is a free data retrieval call binding the contract method 0x70a08231.
+//
+// Solidity: function balanceOf(_owner address) constant returns(uint256)
+func (_Stakecheck *StakecheckCallerSession) BalanceOf(_owner common.Address) (*big.Int, error) {
+	return _Stakecheck.Contract.BalanceOf(&_Stakecheck.CallOpts, _owner)
+}
+
+// CheckStake is a free data retrieval call binding the contract method 0x90d96d76.
+//
+// Solidity: function checkStake(_addr address) constant returns(uint256)
+func (_Stakecheck *StakecheckCaller) CheckStake(opts *bind.CallOpts, _addr common.Address) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Stakecheck.contract.Call(opts, out, "checkStake", _addr)
+	return *ret0, err
+}
+
+// CheckStake is a free data retrieval call binding the contract method 0x90d96d76.
+//
+// Solidity: function checkStake(_addr address) constant returns(uint256)
+func (_Stakecheck *StakecheckSession) CheckStake(_addr common.Address) (*big.Int, error) {
+	return _Stakecheck.Contract.CheckStake(&_Stakecheck.CallOpts, _addr)
+}
+
+// CheckStake is a free data retrieval call binding the contract method 0x90d96d76.
+//
+// Solidity: function checkStake(_addr address) constant returns(uint256)
+func (_Stakecheck *StakecheckCallerSession) CheckStake(_addr common.Address) (*big.Int, error) {
+	return _Stakecheck.Contract.CheckStake(&_Stakecheck.CallOpts, _addr)
+}
+
+// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+//
+// Solidity: function owner() constant returns(address)
+func (_Stakecheck *StakecheckCaller) Owner(opts *bind.CallOpts) (common.Address, error) {
+	var (
+		ret0 = new(common.Address)
+	)
+	out := ret0
+	err := _Stakecheck.contract.Call(opts, out, "owner")
+	return *ret0, err
+}
+
+// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+//
+// Solidity: function owner() constant returns(address)
+func (_Stakecheck *StakecheckSession) Owner() (common.Address, error) {
+	return _Stakecheck.Contract.Owner(&_Stakecheck.CallOpts)
+}
+
+// Owner is a free data retrieval call binding the contract method 0x8da5cb5b.
+//
+// Solidity: function owner() constant returns(address)
+func (_Stakecheck *StakecheckCallerSession) Owner() (common.Address, error) {
+	return _Stakecheck.Contract.Owner(&_Stakecheck.CallOpts)
+}
+
+// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() constant returns(uint256)
+func (_Stakecheck *StakecheckCaller) TotalSupply(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Stakecheck.contract.Call(opts, out, "totalSupply")
+	return *ret0, err
+}
+
+// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() constant returns(uint256)
+func (_Stakecheck *StakecheckSession) TotalSupply() (*big.Int, error) {
+	return _Stakecheck.Contract.TotalSupply(&_Stakecheck.CallOpts)
+}
+
+// TotalSupply is a free data retrieval call binding the contract method 0x18160ddd.
+//
+// Solidity: function totalSupply() constant returns(uint256)
+func (_Stakecheck *StakecheckCallerSession) TotalSupply() (*big.Int, error) {
+	return _Stakecheck.Contract.TotalSupply(&_Stakecheck.CallOpts)
+}
+
+// AddStake is a paid mutator transaction binding the contract method 0x2d49aa1c.
+//
+// Solidity: function addStake(_value uint256, _addr address) returns()
+func (_Stakecheck *StakecheckTransactor) AddStake(opts *bind.TransactOpts, _value *big.Int, _addr common.Address) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "addStake", _value, _addr)
+}
+
+// AddStake is a paid mutator transaction binding the contract method 0x2d49aa1c.
+//
+// Solidity: function addStake(_value uint256, _addr address) returns()
+func (_Stakecheck *StakecheckSession) AddStake(_value *big.Int, _addr common.Address) (*types.Transaction, error) {
+	return _Stakecheck.Contract.AddStake(&_Stakecheck.TransactOpts, _value, _addr)
+}
+
+// AddStake is a paid mutator transaction binding the contract method 0x2d49aa1c.
+//
+// Solidity: function addStake(_value uint256, _addr address) returns()
+func (_Stakecheck *StakecheckTransactorSession) AddStake(_value *big.Int, _addr common.Address) (*types.Transaction, error) {
+	return _Stakecheck.Contract.AddStake(&_Stakecheck.TransactOpts, _value, _addr)
+}
+
+// Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
+//
+// Solidity: function approve(_spender address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactor) Approve(opts *bind.TransactOpts, _spender common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "approve", _spender, _value)
+}
+
+// Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
+//
+// Solidity: function approve(_spender address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckSession) Approve(_spender common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.Approve(&_Stakecheck.TransactOpts, _spender, _value)
+}
+
+// Approve is a paid mutator transaction binding the contract method 0x095ea7b3.
+//
+// Solidity: function approve(_spender address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactorSession) Approve(_spender common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.Approve(&_Stakecheck.TransactOpts, _spender, _value)
+}
+
+// DecreaseApproval is a paid mutator transaction binding the contract method 0x66188463.
+//
+// Solidity: function decreaseApproval(_spender address, _subtractedValue uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactor) DecreaseApproval(opts *bind.TransactOpts, _spender common.Address, _subtractedValue *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "decreaseApproval", _spender, _subtractedValue)
+}
+
+// DecreaseApproval is a paid mutator transaction binding the contract method 0x66188463.
+//
+// Solidity: function decreaseApproval(_spender address, _subtractedValue uint256) returns(bool)
+func (_Stakecheck *StakecheckSession) DecreaseApproval(_spender common.Address, _subtractedValue *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.DecreaseApproval(&_Stakecheck.TransactOpts, _spender, _subtractedValue)
+}
+
+// DecreaseApproval is a paid mutator transaction binding the contract method 0x66188463.
+//
+// Solidity: function decreaseApproval(_spender address, _subtractedValue uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactorSession) DecreaseApproval(_spender common.Address, _subtractedValue *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.DecreaseApproval(&_Stakecheck.TransactOpts, _spender, _subtractedValue)
+}
+
+// IncreaseApproval is a paid mutator transaction binding the contract method 0xd73dd623.
+//
+// Solidity: function increaseApproval(_spender address, _addedValue uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactor) IncreaseApproval(opts *bind.TransactOpts, _spender common.Address, _addedValue *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "increaseApproval", _spender, _addedValue)
+}
+
+// IncreaseApproval is a paid mutator transaction binding the contract method 0xd73dd623.
+//
+// Solidity: function increaseApproval(_spender address, _addedValue uint256) returns(bool)
+func (_Stakecheck *StakecheckSession) IncreaseApproval(_spender common.Address, _addedValue *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.IncreaseApproval(&_Stakecheck.TransactOpts, _spender, _addedValue)
+}
+
+// IncreaseApproval is a paid mutator transaction binding the contract method 0xd73dd623.
+//
+// Solidity: function increaseApproval(_spender address, _addedValue uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactorSession) IncreaseApproval(_spender common.Address, _addedValue *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.IncreaseApproval(&_Stakecheck.TransactOpts, _spender, _addedValue)
+}
+
+// ReleaseStake is a paid mutator transaction binding the contract method 0x3b249039.
+//
+// Solidity: function releaseStake(_value uint256, _addr address) returns()
+func (_Stakecheck *StakecheckTransactor) ReleaseStake(opts *bind.TransactOpts, _value *big.Int, _addr common.Address) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "releaseStake", _value, _addr)
+}
+
+// ReleaseStake is a paid mutator transaction binding the contract method 0x3b249039.
+//
+// Solidity: function releaseStake(_value uint256, _addr address) returns()
+func (_Stakecheck *StakecheckSession) ReleaseStake(_value *big.Int, _addr common.Address) (*types.Transaction, error) {
+	return _Stakecheck.Contract.ReleaseStake(&_Stakecheck.TransactOpts, _value, _addr)
+}
+
+// ReleaseStake is a paid mutator transaction binding the contract method 0x3b249039.
+//
+// Solidity: function releaseStake(_value uint256, _addr address) returns()
+func (_Stakecheck *StakecheckTransactorSession) ReleaseStake(_value *big.Int, _addr common.Address) (*types.Transaction, error) {
+	return _Stakecheck.Contract.ReleaseStake(&_Stakecheck.TransactOpts, _value, _addr)
+}
+
+// Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
+//
+// Solidity: function transfer(_to address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactor) Transfer(opts *bind.TransactOpts, _to common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "transfer", _to, _value)
+}
+
+// Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
+//
+// Solidity: function transfer(_to address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckSession) Transfer(_to common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.Transfer(&_Stakecheck.TransactOpts, _to, _value)
+}
+
+// Transfer is a paid mutator transaction binding the contract method 0xa9059cbb.
+//
+// Solidity: function transfer(_to address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactorSession) Transfer(_to common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.Transfer(&_Stakecheck.TransactOpts, _to, _value)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(_from address, _to address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactor) TransferFrom(opts *bind.TransactOpts, _from common.Address, _to common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "transferFrom", _from, _to, _value)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(_from address, _to address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckSession) TransferFrom(_from common.Address, _to common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.TransferFrom(&_Stakecheck.TransactOpts, _from, _to, _value)
+}
+
+// TransferFrom is a paid mutator transaction binding the contract method 0x23b872dd.
+//
+// Solidity: function transferFrom(_from address, _to address, _value uint256) returns(bool)
+func (_Stakecheck *StakecheckTransactorSession) TransferFrom(_from common.Address, _to common.Address, _value *big.Int) (*types.Transaction, error) {
+	return _Stakecheck.Contract.TransferFrom(&_Stakecheck.TransactOpts, _from, _to, _value)
+}
+
+// TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
+//
+// Solidity: function transferOwnership(newOwner address) returns()
+func (_Stakecheck *StakecheckTransactor) TransferOwnership(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
+	return _Stakecheck.contract.Transact(opts, "transferOwnership", newOwner)
+}
+
+// TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
+//
+// Solidity: function transferOwnership(newOwner address) returns()
+func (_Stakecheck *StakecheckSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _Stakecheck.Contract.TransferOwnership(&_Stakecheck.TransactOpts, newOwner)
+}
+
+// TransferOwnership is a paid mutator transaction binding the contract method 0xf2fde38b.
+//
+// Solidity: function transferOwnership(newOwner address) returns()
+func (_Stakecheck *StakecheckTransactorSession) TransferOwnership(newOwner common.Address) (*types.Transaction, error) {
+	return _Stakecheck.Contract.TransferOwnership(&_Stakecheck.TransactOpts, newOwner)
+}
+
+func instantiateStakecheck() {
+	// Create an IPC based RPC connection to a remote node
+	conn, err := ethclient.Dial("/home/nishant/XDC01-docker-Nnodes/static-nodes/qdata_1/dd/")
+	if err != nil {
+		log.Info("Failed to connect to the Ethereum client: %v", err)
+	}
+	// Instantiate the contract and display its name
+	stakecheck, err := NewStakecheck(common.HexToAddress("0xC4c83D2917FF28DbfDF5E1b8173AFac9AEb90fc5"), conn)
+	if err != nil {
+		log.Info("Failed to instantiate Stakecheck contract: %v", err)
+	}
+	if stakecheck!=nil{
+		log.Info("Instantiated")
+	}
+	addr := common.HexToAddress("0x0638e1574728b6d862dd5d3a3e0942c3be47d996")
+
+	//// Create an authorized transactor
+	//auth, err := bind.NewTransactor(strings.NewReader(key), "")
+	//if err!= nil {
+	//	log.Info("Failed to create authorized transactor: %v", err)
+	//}
+
+	stakes, err := stakecheck.CheckStake(&bind.CallOpts{Pending: true},addr)
+	if err != nil {
+		log.Info("Failed to receive stakes: %v", err)
+	}
+	if stakes != nil{
+		log.Info("Stake check initiated")
+	}
+}
+
